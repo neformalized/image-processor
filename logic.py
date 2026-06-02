@@ -95,9 +95,11 @@ class Logic:
             
             transcribed = transcribe(encode_audio(media_tools.extract_audio_bytes(path_video)))
             
-            if bool(transcribed.strip()):
+            usage.append(transcribed["usage"])
+            
+            if bool(transcribed["result"].strip()):
                 
-                self.sub_pipeline_transcribed(response, usage, transcribed)
+                self.sub_pipeline_transcribed(response, usage, transcribed["result"])
             #
         #
         
