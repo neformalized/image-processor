@@ -285,21 +285,17 @@ class Logic:
 
         if _type is None:
             
-            print(f"Unknown content type for link: {link}")
             os.remove(file)
-            return
+            raise ValueError("Unsupported file type/Download error")
         #
 
         if _type == "image":
             
-            print(f"Image file downloaded: {file}")
-                
             try:
                 Image.open(file).verify()
             except Exception as e:
-                print(f"Failed to open image file: {file}, error: {e}")
                 os.remove(file)
-                return
+                raise ValueError("Unsupported image")
             #
 
             self.pipeline_image(response, usage, file)
@@ -307,13 +303,10 @@ class Logic:
 
         if _type == "video":
             
-            print(f"Video file: {file}")
-
             if not media_tools.video_verify(file):
                 
-                print(f"Video verification failed for file: {file}")
                 os.remove(file)
-                return
+                raise ValueError("Unsupported video")
             #
 
             self.pipeline_video(response, usage, file)

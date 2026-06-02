@@ -1,9 +1,9 @@
-import asyncio
+import asyncio, multiprocessing
 
 from logic import Logic
 from bullmq import Worker, Queue
 
-from config import QUEUE_JOB, QUEUE_RESULT, REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD, REDIS_PREFIX
+from config import QUEUE_JOB, QUEUE_RESULT, REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD, REDIS_PREFIX, WORKERS
 
 master = None
 response_queue = None
@@ -12,7 +12,7 @@ async def processor(job, token):
     
     global response_queue, master
 
-    print("JOB:", job.name)
+    print(f"{multiprocessing.current_process().name} get job:{job.name}")
     
     data = job.data
 
@@ -20,8 +20,6 @@ async def processor(job, token):
     usages = []
 
     for item in data["items"]:
-        
-        print("Processing item:", item["url"])
 
         result, usage = master.work(item["url"])
         
@@ -44,6 +42,8 @@ async def processor(job, token):
         result["usage"] = _usage
         
         #
+        
+        print(f"{multiprocessing.current_process().name} finish job:{job.name}")
         
         results.append(result)
     #
@@ -98,11 +98,34 @@ async def main():
         }
     )
 
-    print("Worker started")
+    print(f"{multiprocessing.current_process().name} started worker")
 
     await asyncio.Future()
 #
 
-if __name__ == "__main__":
-
+def run_worker():
+    
     asyncio.run(main())
+#
+
+if __name__ == "__main__":
+    
+    multiprocessing.set_start_method("spawn", force=True)
+    
+    processes = []
+
+    for i in range(WORKERS):
+        
+        p = multiprocessing.Process(
+            name=f"core #{i}",
+            target=run_worker
+        )
+        
+        p.start()
+        processes.append(p)
+    #
+    
+    for p in processes:
+        
+        p.join()
+    #
