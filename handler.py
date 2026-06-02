@@ -114,7 +114,7 @@ if __name__ == "__main__":
     
     processes = []
 
-    for i in range(WORKERS):
+    for i in range(int(WORKERS)):
         
         p = multiprocessing.Process(
             name=f"core #{i}",
