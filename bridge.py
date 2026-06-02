@@ -49,7 +49,7 @@ def transcribe(audio):
 
 class BridgeVision:
     
-    def __init__(self, api_key, base_url):
+    def __init__(self):
         
         self.client = OpenAI(
             api_key = BASE_API,
