@@ -33,16 +33,23 @@ def transcribe(audio):
     
     result = dict()
     
-    try:
-        result["result"] = response.output.choices[0].message.content[0]["text"]
-    except Exception:
-        result["result"] = ""
-    #
+    result["result"] = ""
     
-    result["usage"] = []
+    result["usage"] = list()
     result["usage"].append("qwen3-asr-flash")
-    result["usage"].append(response.usage.input_tokens)
-    result["usage"].append(response.usage.output_tokens)
+    
+    try:
+        
+        result["result"] = response.output.choices[0].message.content[0]["text"]
+        
+        result["usage"].append(response.usage.input_tokens)
+        result["usage"].append(response.usage.output_tokens)
+    #
+    except Exception:
+        
+        result["usage"].append(0)
+        result["usage"].append(0)
+    #
     
     return result
 #
@@ -70,7 +77,8 @@ class BridgeVision:
                     "role": "user",
                     "content": text
                 }
-            ]
+            ],
+            extra_body={"enable_thinking": False}
         )
         
         result = dict()
