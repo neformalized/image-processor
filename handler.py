@@ -28,16 +28,28 @@ async def processor(job, token):
         #
         
         result["mediaId"] = item["mediaId"]
-        results.append(result)
         
         #
         
-        #usages calculations
+        _usage = {}
+        
+        for u in usage:
+            
+            if u[0] not in _usage.keys(): _usage[u[0]] = {"input": 0, "output": 0}
+            
+            _usage[u[0]]["input"] += int(u[1])
+            _usage[u[0]]["output"] += int(u[2])
+        #
+        
+        result["usage"] = _usage
+        
+        #
+        
+        results.append(result)
     #
 
     response = {
         "fbAdId": data["fbAdId"],
-        "usage": {},
         "snapshotId": data["snapshotId"],
         "analisysVersion": "v0.1",
         "items": results
