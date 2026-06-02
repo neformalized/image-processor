@@ -44,7 +44,7 @@ def transcribe(audio):
     result["usage"].append(response.usage.input_tokens)
     result["usage"].append(response.usage.output_tokens)
     
-    return results
+    return result
 #
 
 class BridgeVision:

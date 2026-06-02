@@ -15,7 +15,7 @@ async def processor(job, token):
     print(f"{multiprocessing.current_process().name} get job:{job.name}")
     
     data = job.data
-
+    
     results = []
     usages = []
 
@@ -43,17 +43,17 @@ async def processor(job, token):
         
         #
         
-        print(f"{multiprocessing.current_process().name} finish job:{job.name}")
-        
         results.append(result)
     #
 
     response = {
-        "fbAdId": data["fbAdId"],
+        "fbAdId": "x",
         "snapshotId": data["snapshotId"],
         "analisysVersion": "v0.1",
         "items": results
     }
+    
+    print(f"{multiprocessing.current_process().name} finish job:{job.name}")
 
     await response_queue.add(
         job.name,
