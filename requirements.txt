@@ -1,7 +1,6 @@
 bullmq
 requests
 python-magic
-tempfile
 pathlib
 pillow
 opencv-python
