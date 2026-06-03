@@ -14,6 +14,10 @@ def encode_video(path: str) -> list:
     
     fps = video.get(cv2.CAP_PROP_FPS)
     
+    step = int(fps * 3)
+    
+    idx = 0
+    
     result = list()
     
     while True:
@@ -22,9 +26,7 @@ def encode_video(path: str) -> list:
         
         if not success: break
         
-        frame_number = int(video.get(cv2.CAP_PROP_POS_FRAMES))
-    
-        if frame_number % int(fps * 3) == 0:
+        if idx % step == 0:
         
             _, buffer = cv2.imencode(
                 ".jpg",
@@ -34,6 +36,8 @@ def encode_video(path: str) -> list:
         
             result.append(base64.b64encode(buffer).decode('utf-8'))
         #
+        
+        idx += 1
     #
     
     video.release()
