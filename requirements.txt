@@ -8,3 +8,4 @@ dotenv
 openai
 dashscope
 numpy
+argparse

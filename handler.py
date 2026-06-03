@@ -1,9 +1,9 @@
-import asyncio, multiprocessing, signal
+import asyncio, multiprocessing, signal, argparse
 
 from logic import Logic
 from bullmq import Worker, Queue
 
-from config import QUEUE_JOB, QUEUE_RESULT, REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD, REDIS_PREFIX, WORKERS
+from config import QUEUE_JOB, QUEUE_RESULT, REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD, REDIS_PREFIX
 
 master = None
 response_queue = None
@@ -159,13 +159,17 @@ def run_worker():
 
 if __name__ == "__main__":
     
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-w", "--workers", type=int, default=100)
+    args = parser.parse_args()
+    
     multiprocessing.set_start_method("spawn", force=True)
     
     processes = []
 
     try:
 
-        for i in range(int(WORKERS)):
+        for i in range(args.workers):
 
             p = multiprocessing.Process(
                 name=f"core #{i}",

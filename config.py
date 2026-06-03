@@ -3,8 +3,6 @@ import os
 
 load_dotenv()
 
-WORKERS = os.getenv("WORKERS")
-
 QUEUE_JOB = os.getenv("QUEUE_JOB")
 QUEUE_RESULT = os.getenv("QUEUE_RESULT")
 
