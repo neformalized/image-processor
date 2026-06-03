@@ -47,19 +47,19 @@ async def processor(job, token):
     #
 
     response = {
-        "fbAdId": "x",
+        "fbAdId": data["fbAdId"],
         "snapshotId": data["snapshotId"],
         "analisysVersion": "v0.1",
         "items": results
     }
     
-    print(f"{multiprocessing.current_process().name} finish job:{job.name}")
-
     await response_queue.add(
         job.name,
         response
     )
-
+    
+    print(f"{multiprocessing.current_process().name} finish job:{job.name}")
+    
     return {
         "status": "ok"
     }
