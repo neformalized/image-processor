@@ -36,6 +36,8 @@ def encode_video(path: str) -> list:
         #
     #
     
+    video.release()
+    
     return result
 #
 
