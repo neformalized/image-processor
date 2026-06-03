@@ -69,6 +69,8 @@ async def main():
     
     global response_queue, master
     
+    shutdown_event = asyncio.Event()
+    
     def signal_handler(signum, frame):
         
         print(f"{multiprocessing.current_process().name} received signal {signum}")
