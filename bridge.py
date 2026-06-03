@@ -1,7 +1,7 @@
 from openai import OpenAI
 import dashscope
 import json
-from config import DASHSCOPE_URL, DASHSCOPE_API, BASE_URL, BASE_API
+from config import DASHSCOPE_API, DASHSCOPE_URL, DASHSCOPE_BASE_URL
 
 dashscope.base_http_api_url = DASHSCOPE_URL
 
@@ -59,8 +59,8 @@ class BridgeVision:
     def __init__(self):
         
         self.client = OpenAI(
-            api_key = BASE_API,
-            base_url = BASE_URL
+            api_key = DASHSCOPE_API,
+            base_url = DASHSCOPE_BASE_URL
         )
     #
     
