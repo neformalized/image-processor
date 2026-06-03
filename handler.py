@@ -1,4 +1,4 @@
-import asyncio, multiprocessing
+import asyncio, multiprocessing, signal
 
 from logic import Logic
 from bullmq import Worker, Queue
@@ -69,6 +69,17 @@ async def main():
     
     global response_queue, master
     
+    def signal_handler(signum, frame):
+        
+        print(f"{multiprocessing.current_process().name} received signal {signum}")
+        shutdown_event.set()
+    #
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    #
+    
     master = Logic()
     
     response_queue = Queue(
@@ -99,13 +110,49 @@ async def main():
     )
 
     print(f"{multiprocessing.current_process().name} started worker")
+    
+    #
+    
+    try:
 
-    await asyncio.Future()
+        await shutdown_event.wait()
+
+        print(f"{multiprocessing.current_process().name} stopping gracefully...")
+    #
+    finally:
+
+        try:
+            
+            await worker.close()
+            
+            print(f"{multiprocessing.current_process().name} worker closed")
+        #
+        except Exception as e:
+            print(f"worker close error: {e}")
+        #
+        
+        try:
+            
+            await response_queue.close()
+            
+            print(f"{multiprocessing.current_process().name} queue closed")
+        #
+        except Exception as e:
+            print(f"queue close error: {e}")
+        #
+        
+        print(f"{multiprocessing.current_process().name} stopped")
+    #
 #
 
 def run_worker():
-    
-    asyncio.run(main())
+
+    try:
+        asyncio.run(main())
+    #
+    except KeyboardInterrupt:
+        pass
+    #
 #
 
 if __name__ == "__main__":
@@ -114,18 +161,29 @@ if __name__ == "__main__":
     
     processes = []
 
-    for i in range(int(WORKERS)):
+    try:
+
+        for i in range(int(WORKERS)):
+
+            p = multiprocessing.Process(
+                name=f"core #{i}",
+                target=run_worker
+            )
+
+            p.start()
+            processes.append(p)
+        #
         
-        p = multiprocessing.Process(
-            name=f"core #{i}",
-            target=run_worker
-        )
-        
-        p.start()
-        processes.append(p)
+        for p in processes:
+            p.join()
+        #
     #
-    
-    for p in processes:
-        
-        p.join()
+    except KeyboardInterrupt:
+
+        print("Main process received Ctrl+C")
+
+        for p in processes:
+            p.join()
+        #
     #
+#
