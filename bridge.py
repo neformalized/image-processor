@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import OpenAI, InternalServerError
 import dashscope
 import json
 from config import DASHSCOPE_API, DASHSCOPE_URL, DASHSCOPE_BASE_URL
@@ -66,79 +66,141 @@ class BridgeVision:
     
     def infer_text(self, text, prompt):
         
-        response = self.client.chat.completions.create(
-            model="qwen3.5-plus",
-            messages=[
-                {
-                    "role": "system",
-                    "content": prompt
-                },
-                {
-                    "role": "user",
-                    "content": text
-                }
-            ],
-            extra_body={"enable_thinking": False}
-        )
+        for i in range(3):
+            
+            try:
+                response = self.client.chat.completions.create(
+                    model="qwen3.5-plus",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": prompt
+                        },
+                        {
+                            "role": "user",
+                            "content": text
+                        }
+                    ],
+                    extra_body={"enable_thinking": False}
+                )
+                
+                result = dict()
+                
+                result["result"] = self._json_extract(response.choices[0].message.content)
+                
+                result["usage"] = []
+                result["usage"].append("qwen3.5-plus")
+                result["usage"].append(response.usage.prompt_tokens)
+                result["usage"].append(response.usage.completion_tokens)
+                
+                return result
+            #
+            except InternalServerError as e:
+                
+                status = getattr(e, "status_code", None)
+
+                if status == 503:
+                    
+                    print("throttling, sleep 30 sec")
+                    time.sleep(30)
+                    continue
+                #
+                
+                raise
+            #
+        #
         
-        result = dict()
-        
-        result["result"] = self._json_extract(response.choices[0].message.content)
-        
-        result["usage"] = []
-        result["usage"].append("qwen3.5-plus")
-        result["usage"].append(response.usage.prompt_tokens)
-        result["usage"].append(response.usage.completion_tokens)
-        
-        return result
+        raise RuntimeError("Requests failed after retries")
     #
     
     def infer_image(self, image, prompt):
         
-        response = self.client.chat.completions.create(
-            model="qwen3-vl-flash",
-            messages=[
-                {
-                    "role": "user",
-                    "content": self._generate_context([image], prompt)
-                }
-            ]
-        )
+        for i in range(3):
+            
+            try:
+                
+                response = self.client.chat.completions.create(
+                    model="qwen3-vl-flash",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": self._generate_context([image], prompt)
+                        }
+                    ]
+                )
+                
+                result = dict()
+                
+                result["result"] = self._json_extract(response.choices[0].message.content)
+                
+                result["usage"] = []
+                result["usage"].append("qwen3-vl-flash")
+                result["usage"].append(response.usage.prompt_tokens)
+                result["usage"].append(response.usage.completion_tokens)
+                
+                return result
+            #
+            except InternalServerError as e:
+                
+                status = getattr(e, "status_code", None)
+
+                if status == 503:
+                    
+                    print("throttling, sleep 30 sec")
+                    time.sleep(30)
+                    continue
+                #
+                
+                raise
+            #
+        #
         
-        result = dict()
-        
-        result["result"] = self._json_extract(response.choices[0].message.content)
-        
-        result["usage"] = []
-        result["usage"].append("qwen3-vl-flash")
-        result["usage"].append(response.usage.prompt_tokens)
-        result["usage"].append(response.usage.completion_tokens)
-        
-        return result
+        raise RuntimeError("Requests failed after retries")
     #
     
     def infer_video(self, video, prompt):
         
-        response = self.client.chat.completions.create(
-            model="qwen3-vl-flash",
-            messages=[
-                {
-                    "role": "user",
-                    "content": self._generate_context(video, prompt)
-                }
-            ]
-        )
+        for i in range(3):
         
-        result = dict()
+            try:
+                
+                response = self.client.chat.completions.create(
+                    model="qwen3-vl-flash",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": self._generate_context(video, prompt)
+                        }
+                    ]
+                )
+                
+                result = dict()
+                
+                result["result"] = self._json_extract(response.choices[0].message.content)
+                
+                result["usage"] = []
+                result["usage"].append("qwen3-vl-flash")
+                result["usage"].append(response.usage.prompt_tokens)
+                result["usage"].append(response.usage.completion_tokens)
+                
+                return result
+            #
+            except InternalServerError as e:
+                
+                status = getattr(e, "status_code", None)
+
+                if status == 503:
+                    
+                    print("throttling, sleep 30 sec")
+                    time.sleep(30)
+                    continue
+                #
+                
+                raise
+            #
+        #
         
-        result["result"] = self._json_extract(response.choices[0].message.content)
-        
-        result["usage"] = []
-        result["usage"].append("qwen3-vl-flash")
-        result["usage"].append(response.usage.prompt_tokens)
-        result["usage"].append(response.usage.completion_tokens)
-        
-        return result
+        raise RuntimeError("Requests failed after retries")
     #
     
     @staticmethod

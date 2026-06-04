@@ -288,7 +288,7 @@ class Logic:
         if _type is None:
             
             os.remove(file)
-            raise ValueError("Unsupported file type/Download error")
+            raise RuntimeError("Unsupported file type/Download error")
         #
 
         if _type == "image":
@@ -297,7 +297,7 @@ class Logic:
                 Image.open(file).verify()
             except Exception as e:
                 os.remove(file)
-                raise ValueError("Unsupported image")
+                raise RuntimeError("Unsupported image")
             #
 
             self.pipeline_image(response, usage, file)
@@ -308,7 +308,7 @@ class Logic:
             if not media_tools.video_verify(file):
                 
                 os.remove(file)
-                raise ValueError("Unsupported video")
+                raise RuntimeError("Unsupported video")
             #
             
             self.pipeline_video(response, usage, file)

@@ -16,7 +16,6 @@ def encode_video(path: str) -> list:
     frames = video.get(cv2.CAP_PROP_FRAME_COUNT)
     
     step = int(fps * 3)
-    if frames > 900: step = int(frames/10)
     
     idx = 0
     
